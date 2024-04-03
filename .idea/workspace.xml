@@ -5,8 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17c7595c-011d-4b91-976c-46a38596a89f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/myapp/controllers/plannerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/about.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/css/browse.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/css/general.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/css/watchers.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/graph.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/scripts/about.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/scripts/browse.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/scripts/graph.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/scripts/watchers.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/watchers.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

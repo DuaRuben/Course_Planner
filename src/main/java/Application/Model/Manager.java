@@ -40,7 +40,6 @@ public class Manager {
                     semesterMap.forEach((location, locationMap) -> {
                         Set<String> uniqueInstructor = new HashSet<>();
                         locationMap.forEach((component, componentMap) -> {
-                            System.out.println("\t\t" + semester + " in "+ location);
                             for (Offering course : componentMap) {
                                 for (String instructor : course.instructors) {
                                     Arrays.stream(instructor.split(","))
@@ -48,11 +47,12 @@ public class Manager {
                                             .forEach(uniqueInstructor::add);
                                 }
                             }
+                            System.out.println("\t\t" + semester + " in "+ location + "By Professor(s):"+ uniqueInstructor);
+
                             int enrollmentCapacity = componentMap.stream().mapToInt(course -> course.enrollmentCapacity).sum();
                             int enrollmentTotal = componentMap.stream().mapToInt(course -> course.enrollmentTotal).sum();
                             System.out.println("\t\t\tType: "+ component + ", Enrollment = "+ enrollmentTotal+ "/"+ enrollmentCapacity);
                         });
-                        System.out.println("\t\tBy Professor(s):"+ uniqueInstructor + "\n");
                     });
                 });
             });

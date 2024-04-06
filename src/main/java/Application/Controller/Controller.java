@@ -96,12 +96,15 @@ public class Controller {
                                                    @PathVariable("courseId") long courseID,
                                                    @PathVariable("offeringId") long offeringId){
         List<ApiOfferingSectionDTO> sectionList = new ArrayList<>();
+
         ApiDepartmentDTO department = getDepartment(deptId);
         ApiCourseDTO course = getCourse(courseID);
         ApiCourseOfferingDTO courseOffering = getOffering(offeringId);
+
         if(department == null || course == null|| courseOffering == null){
             throw new IllegalArgumentException();
         }
+
         List<Offering> offeringList = manager.getOffering(department.getName(),course.getCatalogNumber());
         if(offeringList.isEmpty()){
             throw new IllegalArgumentException();

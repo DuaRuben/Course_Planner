@@ -46,7 +46,7 @@ public class Offering {
         return componentCode;
     }
 
-    public Offering(int semester, String subject, String catalogNumber, String location, int enrollmentCapacity, int enrollmentTotal, List<String> instructors, String componentCode) {
+    public Offering(long semester, String subject, String catalogNumber, String location, int enrollmentCapacity, int enrollmentTotal, List<String> instructors, String componentCode) {
         this.semester = semester;
         this.subject = subject;
         this.catalogNumber = catalogNumber;

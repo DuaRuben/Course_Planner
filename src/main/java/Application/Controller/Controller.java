@@ -82,7 +82,7 @@ public class Controller {
             String instructors = getAllInstructors(offering);
             String term = getTerm(offering.getSemester());
             int year = getYear(offering.getSemester());
-            if(!manager.inList(courseOfferingList,offering,instructors)){
+            if(!manager.inList(courseOfferingList,offering,instructors,offering.getInstructors())){
                 courseOfferingList.add(new ApiCourseOfferingDTO(id,offering.getLocation(),instructors,term,offering.getSemester(),year));
                 id++;
             }
@@ -111,6 +111,23 @@ public class Controller {
         }
 
         return sectionList;
+    }
+
+    @PostMapping("/api/addoffering")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addOffering(@RequestBody long semester,
+                            @RequestBody String subjectName,
+                            @RequestBody String catalogNumber,
+                            @RequestBody String location,
+                            @RequestBody int enrollmentCap,
+                            @RequestBody String component,
+                            @RequestBody int enrollmentTotal,
+                            @RequestBody String instructor){
+        Offering newOffering = new Offering(semester,subjectName,catalogNumber,
+                location,enrollmentCap,enrollmentTotal,List.of(instructor),component);
+        manager.addOffering(newOffering);
+        Manager.mapOfferings();
+
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")

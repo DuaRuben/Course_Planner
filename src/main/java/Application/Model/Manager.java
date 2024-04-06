@@ -12,11 +12,15 @@ public class Manager {
     private static Map<Object, Map<Object, Map<Object, Map<Object, Map<Object, List<Offering>>>>>> offeringMap;
     private static final CSV csv = new CSV();
 
+    public void addOffering(Offering newOffering){
+        offeringList.add(newOffering);
+    }
+
     public static void run(Path csvPath) throws IOException {
         offeringList = csv.loadListFromCsv(csvPath);
         mapOfferings();
     }
-    private static void mapOfferings() {
+    public static void mapOfferings() {
         offeringMap = offeringList.stream()
                 .collect(Collectors.groupingBy(
                         course -> course.subject,
@@ -96,13 +100,22 @@ public class Manager {
         }
         return ans;
     }
-    public boolean inList(List<ApiCourseOfferingDTO> list, Offering offering,String ins){
+    public boolean inList(List<ApiCourseOfferingDTO> list, Offering offering,String ins,List<String> instructorList){
         long semester = offering.getSemester();
         String location = offering.getLocation();
         for(ApiCourseOfferingDTO courseOfferingDTO:list){
-            if(courseOfferingDTO.getSemesterCode() == semester && courseOfferingDTO.getLocation().equals(location) &&
-                        courseOfferingDTO.getInstructors().equals(ins)){
-                return true;
+            if(courseOfferingDTO.getSemesterCode() == semester && courseOfferingDTO.getLocation().equals(location)){
+                if(courseOfferingDTO.getInstructors().equals(ins)){
+                    return true;
+                }
+                else{
+                    for(String instructor:instructorList){
+                        if(!courseOfferingDTO.getInstructors().contains(instructor)){
+                            courseOfferingDTO.setInstructors(courseOfferingDTO.getInstructors()+" "+instructor);
+                        }
+                    }
+                    return true;
+                }
             }
         }
         return false;

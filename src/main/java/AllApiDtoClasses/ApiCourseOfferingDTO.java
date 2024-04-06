@@ -32,6 +32,10 @@ public class ApiCourseOfferingDTO {
         return year;
     }
 
+    public void setInstructors(String instructors) {
+        this.instructors = instructors;
+    }
+
     public ApiCourseOfferingDTO(long courseOfferingId, String location, String instructors, String term, long semesterCode, int year) {
         this.courseOfferingId = courseOfferingId;
         this.location = location;

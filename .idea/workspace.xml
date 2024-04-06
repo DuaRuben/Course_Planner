@@ -6,11 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="17c7595c-011d-4b91-976c-46a38596a89f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiCourseOfferingDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiCourseOfferingDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiOfferingDataDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiOfferingDataDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiWatcherCreateDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiWatcherCreateDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiWatcherDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/AllApiDtoClasses/ApiWatcherDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Application/Controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Controller/Controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Application/Model/Manager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Model/Manager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Application/Model/Offering.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Model/Offering.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

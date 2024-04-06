@@ -93,7 +93,6 @@ public class Manager {
         }
         List<Offering> ans = new ArrayList<>();
         for(Offering offering:offeringList){
-            System.out.println(offering);
             if(offering.getSubject().equals(subject) && offering.getCatalogNumber().equals(course)){
                 ans.add(offering);
             }
@@ -111,7 +110,7 @@ public class Manager {
                 else{
                     for(String instructor:instructorList){
                         if(!courseOfferingDTO.getInstructors().contains(instructor)){
-                            courseOfferingDTO.setInstructors(courseOfferingDTO.getInstructors()+" "+instructor);
+                            courseOfferingDTO.setInstructors(courseOfferingDTO.getInstructors()+", "+instructor);
                         }
                     }
                     return true;

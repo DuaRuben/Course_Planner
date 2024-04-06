@@ -12,6 +12,6 @@ public class Application {
     public static void main(String[] args) throws IOException {
         SpringApplication.run(Application.class, args);
         Manager manager = new Manager();
-        Manager.run(Path.of("data/course_data_2022.csv"));
+        Manager.run(Path.of("data/course_data_2018.csv"));
     }
 }

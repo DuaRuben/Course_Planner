@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Offering {
-    public int semester;
+    public long semester;
     public String subject;
     public String catalogNumber;
     public String location;
@@ -13,6 +13,38 @@ public class Offering {
     public int enrollmentTotal;
     public List<String> instructors;
     public String componentCode;
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getCatalogNumber() {
+        return catalogNumber;
+    }
+
+    public long getSemester() {
+        return semester;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public int getEnrollmentCapacity() {
+        return enrollmentCapacity;
+    }
+
+    public int getEnrollmentTotal() {
+        return enrollmentTotal;
+    }
+
+    public List<String> getInstructors() {
+        return instructors;
+    }
+
+    public String getComponentCode() {
+        return componentCode;
+    }
 
     public Offering(int semester, String subject, String catalogNumber, String location, int enrollmentCapacity, int enrollmentTotal, List<String> instructors, String componentCode) {
         this.semester = semester;

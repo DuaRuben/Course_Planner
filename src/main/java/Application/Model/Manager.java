@@ -59,14 +59,31 @@ public class Manager {
         });
         return "Model dumped successfully.";
     }
+    public Set<Object> getAllSubjects(){
+        return offeringMap.keySet();
+    }
 
-    private String getDate(int semester) {
-        return String.valueOf(1900 + semester / 10);
+    public Set<Object> getAllCourses(String subject){
+        Set<Object> departments = getAllSubjects();
+        for(Object dept:departments){
+            if(dept.equals(subject)){
+                return offeringMap.get(dept).keySet();
+            }
+        }
+        return null;
     }
-    private String getSemester(int semester) {
-        String[] sem = {
-                "Spring", "Summer", "Fall"
-        };
-        return sem[(((semester % 10) - 1) / 3)];
+    public List<Offering> getOffering(String subject, String course){
+        if(offeringList.isEmpty()){
+            return null;
+        }
+        List<Offering> ans = new ArrayList<>();
+        for(Offering offering:offeringList){
+            System.out.println(offering);
+            if(offering.getSubject().equals(subject) && offering.getCatalogNumber().equals(course)){
+                ans.add(offering);
+            }
+        }
+        return ans;
     }
+
 }

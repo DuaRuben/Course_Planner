@@ -1,5 +1,7 @@
 package Application.Model;
 
+import AllApiDtoClasses.ApiCourseOfferingDTO;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -47,7 +49,7 @@ public class Manager {
                                             .forEach(uniqueInstructor::add);
                                 }
                             }
-                            System.out.println("\t\t" + semester + " in "+ location + "By Professor(s):"+ uniqueInstructor);
+                            System.out.println("\t\t" + semester + " in "+ location + " By Professor(s):"+ uniqueInstructor);
 
                             int enrollmentCapacity = componentMap.stream().mapToInt(course -> course.enrollmentCapacity).sum();
                             int enrollmentTotal = componentMap.stream().mapToInt(course -> course.enrollmentTotal).sum();
@@ -72,6 +74,15 @@ public class Manager {
         }
         return null;
     }
+    public  Map<Object, Map<Object, Map<Object, List<Offering>>>> getAllCourseOffering(String subject,String catalog){
+        Set<Object> courses = getAllCourses(subject);
+        for(Object course:courses){
+            if(course.equals(catalog)){
+                return offeringMap.get(subject).get(catalog);
+            }
+        }
+        return null;
+    }
     public List<Offering> getOffering(String subject, String course){
         if(offeringList.isEmpty()){
             return null;
@@ -85,5 +96,17 @@ public class Manager {
         }
         return ans;
     }
+    public boolean inList(List<ApiCourseOfferingDTO> list, Offering offering,String ins){
+        long semester = offering.getSemester();
+        String location = offering.getLocation();
+        for(ApiCourseOfferingDTO courseOfferingDTO:list){
+            if(courseOfferingDTO.getSemesterCode() == semester && courseOfferingDTO.getLocation().equals(location) &&
+                        courseOfferingDTO.getInstructors().equals(ins)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

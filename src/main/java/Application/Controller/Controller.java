@@ -1,15 +1,13 @@
 package Application.Controller;
 
-import AllApiDtoClasses.ApiAboutDTO;
-import AllApiDtoClasses.ApiCourseDTO;
-import AllApiDtoClasses.ApiCourseOfferingDTO;
-import AllApiDtoClasses.ApiDepartmentDTO;
+import AllApiDtoClasses.*;
 import Application.Model.Manager;
 import Application.Model.Offering;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +63,7 @@ public class Controller {
         return courseList;
     }
 
-    @GetMapping("/api/departments/{deptID}/courses/{courseID}/offerings")
+    @GetMapping("/api/departments/{deptId}/courses/{courseID}/offerings")
     @ResponseStatus(HttpStatus.OK)
     public List<ApiCourseOfferingDTO> getCourseOfferings(@PathVariable("deptId") long deptId,
                                                          @PathVariable("courseID") long courseID) {
@@ -84,11 +82,32 @@ public class Controller {
             String instructors = getAllInstructors(offering);
             String term = getTerm(offering.getSemester());
             int year = getYear(offering.getSemester());
-            courseOfferingList.add(new ApiCourseOfferingDTO(id,offering.getLocation(),instructors,term,offering.getSemester(),year));
-            id++;
+            if(!manager.inList(courseOfferingList,offering,instructors)){
+                courseOfferingList.add(new ApiCourseOfferingDTO(id,offering.getLocation(),instructors,term,offering.getSemester(),year));
+                id++;
+            }
         }
+        courseOfferingList.sort(Comparator.comparing(ApiCourseOfferingDTO::getSemesterCode));
         return courseOfferingList;
 
+    }
+    @GetMapping("/api/departments/{deptId}/courses/{courseId}/offerings/{offeringId}")
+    public List<ApiOfferingSectionDTO> getSections(@PathVariable("deptId") long deptId,
+                                                   @PathVariable("courseId") long courseID,
+                                                   @PathVariable("offeringId") long offeringId){
+        List<ApiOfferingSectionDTO> sectionList = new ArrayList<>();
+        ApiDepartmentDTO department = getDepartment(deptId);
+        ApiCourseDTO course = getCourse(courseID);
+        ApiCourseOfferingDTO courseOffering = getOffering(offeringId);
+        if(department == null || course == null|| courseOffering == null){
+            throw new IllegalArgumentException();
+        }
+        List<Offering> offeringList = manager.getOffering(department.getName(),course.getCatalogNumber());
+        if(offeringList.isEmpty()){
+            throw new IllegalArgumentException();
+        }
+
+        return sectionList;
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
@@ -114,7 +133,14 @@ public class Controller {
         }
         return null;
     }
-
+    public ApiCourseOfferingDTO getOffering(long offeringId) {
+        for (ApiCourseOfferingDTO offeringDTO : courseOfferingList) {
+            if (offeringDTO.getCourseOfferingId() == offeringId) {
+                return offeringDTO;
+            }
+        }
+        return null;
+    }
     public int getYear(long semester) {
         semester = semester/10;
         long divisor = 1L;

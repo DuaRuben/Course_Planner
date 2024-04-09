@@ -132,6 +132,7 @@ public class Controller {
         Offering newOffering = new Offering(semester,subjectName,catalogNumber,
                 location,enrollmentCap,enrollmentTotal,List.of(instructor),component);
 
+        // Change this to map.put()
         manager.addOffering(newOffering);
         Manager.mapOfferings();
 

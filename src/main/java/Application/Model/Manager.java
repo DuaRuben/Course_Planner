@@ -92,6 +92,9 @@ public class Manager {
             return null;
         }
         List<Offering> ans = new ArrayList<>();
+        System.out.println(offeringMap.get(subject).get(course));
+
+        //Give a list for this map
         for(Offering offering:offeringList){
             if(offering.getSubject().equals(subject) && offering.getCatalogNumber().equals(course)){
                 ans.add(offering);

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 public class Manager {
     private static List<Offering> offeringList = new ArrayList<>();
-    private static Map<Object, Map<Object, Map<Object, Map<Object, Map<Object, List<Offering>>>>>> offeringMap;
     private static final CSV csv = new CSV();
     private static List<Department> departments = new ArrayList<>();
     private static long deptId;
@@ -21,25 +20,7 @@ public class Manager {
 
     public static void run(Path csvPath) throws IOException {
         offeringList = csv.loadListFromCsv(csvPath);
-        mapOfferings();
         map();
-    }
-    public static void mapOfferings() {
-        offeringMap = offeringList.stream()
-                .collect(Collectors.groupingBy(
-                        course -> course.subject,
-                        TreeMap::new,
-                        Collectors.groupingBy(
-                                course -> course.catalogNumber,
-                                TreeMap::new,
-                                Collectors.groupingBy(
-                                        course -> course.semester,
-                                        TreeMap::new,
-                                        Collectors.groupingBy(
-                                                course -> course.location,
-                                                TreeMap::new,
-                                                Collectors.groupingBy(course -> course.componentCode)
-                )))));
     }
 
     public static Department departmentPresent(String dept) {
@@ -60,24 +41,29 @@ public class Manager {
                     offering.getEnrollmentCapacity(),
                     offering.getComponentCode());
             sections.add(section);
+            sections.sort(Comparator.comparing(Section::getComponent));
             CourseOffering courseOffering = new CourseOffering(courseOfferingId++,
                     offering.getSemester(),
                     offering.getLocation(),
                     offering.getInstructors(),
                     sections);
             courseOfferings.add(courseOffering);
+            courseOfferings.sort(Comparator.comparing(CourseOffering::getSemester)
+                    .thenComparing(CourseOffering::getLocation));
             Course course = new Course(courseId++, offering.getCatalogNumber(), courseOfferings);
             courses.add(course);
+            courses.sort(Comparator.comparing(Course::getCatalogNumber));
             departments.add(new Department(deptId++, offering.getSubject(), courses));
         } else {
             checkCourses(department,offering);
         }
     }
-public static void map() {
-    for (Offering offering : offeringList) {
-        addOffering(offering);
+    public static void map() {
+        for (Offering offering : offeringList) {
+            addOffering(offering);
+        }
+        departments.sort(Comparator.comparing(Department::getSubject));
     }
-}
 
     public static Course coursePresent(String catalogNumber, List<Course> courses) {
         for(Course course: courses) {
@@ -98,14 +84,18 @@ public static void map() {
                     offering.getEnrollmentCapacity(),
                     offering.getComponentCode());
             sections.add(section);
+            sections.sort(Comparator.comparing(Section::getComponent));
             CourseOffering courseOffering = new CourseOffering(courseOfferingId++,
                     offering.getSemester(),
                     offering.getLocation(),
                     offering.getInstructors(),
                     sections);
             courseOfferings.add(courseOffering);
+            courseOfferings.sort(Comparator.comparing(CourseOffering::getSemester)
+                    .thenComparing(CourseOffering::getLocation));
             Course newCourse = new Course(courseId++, offering.getCatalogNumber(), courseOfferings);
             department.getCourses().add(newCourse);
+            department.getCourses().sort(Comparator.comparing(Course::getCatalogNumber));
         }
         else{
             checkCourseOffering(course,offering);
@@ -129,12 +119,15 @@ public static void map() {
                     offering.getEnrollmentCapacity(),
                     offering.getComponentCode());
             sections.add(section);
+            sections.sort(Comparator.comparing(Section::getComponent));
             CourseOffering newCourseOffering = new CourseOffering(courseOfferingId++,
                     offering.getSemester(),
                     offering.getLocation(),
                     offering.getInstructors(),
                     sections);
             course.getCourseOfferings().add(newCourseOffering);
+            course.getCourseOfferings().sort(Comparator.comparing(CourseOffering::getSemester)
+                    .thenComparing(CourseOffering::getLocation));
         }
         //else add to instructor list and check on component
         else{
@@ -145,11 +138,7 @@ public static void map() {
             courseOffering.setInstructors(newInstructors);
             checkSections(courseOffering,offering);
         }
-
     }
-
-
-
     public static Section sectionPresent(String component,List<Section> sectionList){
         for(Section section:sectionList){
             if(section.getComponent().equals(component)){
@@ -158,116 +147,48 @@ public static void map() {
         }
         return null;
     }
-
-
     public static void checkSections(CourseOffering courseOffering,Offering offering){
         Section section = sectionPresent(offering.getComponentCode(),courseOffering.getSections());
-        //if null create new section
         if(section == null){
             Section newSection = new Section(offering.getEnrollmentTotal(),
                     offering.getEnrollmentCapacity(),
                     offering.getComponentCode());
             courseOffering.getSections().add(newSection);
+            courseOffering.getSections().sort(Comparator.comparing(Section::getComponent));
         }
-        //else add enrollmentCap and total
         else{
-            section.setEnrollmentCap(section.getEnrollmentCap()+offering.getEnrollmentCapacity());
-            section.setEnrollmentTotal(section.getEnrollmentTotal()+offering.getEnrollmentTotal());
+            section.setEnrollmentCap(section.getEnrollmentCap() + offering.getEnrollmentCapacity());
+            section.setEnrollmentTotal(section.getEnrollmentTotal() + offering.getEnrollmentTotal());
         }
     }
 
     public String printModel() {
-        System.out.println();
-        offeringMap.forEach((subject, subjectMap) -> {
-            subjectMap.forEach((catalog, catalogMap) -> {
-                System.out.println(subject + " " + catalog);
-                catalogMap.forEach((semester, semesterMap)-> {
-                    semesterMap.forEach((location, locationMap) -> {
-                        Set<String> uniqueInstructor = new HashSet<>();
-                        locationMap.forEach((component, componentMap) -> {
-                            for (Offering course : componentMap) {
-                                for (String instructor : course.instructors) {
-                                    Arrays.stream(instructor.split(","))
-                                            .map(String::trim)
-                                            .forEach(uniqueInstructor::add);
-                                }
-                            }
-                            System.out.println("\t\t" + semester + " in "+ location + " By Professor(s):"+ uniqueInstructor);
-
-                            int enrollmentCapacity = componentMap.stream().mapToInt(course -> course.enrollmentCapacity).sum();
-                            int enrollmentTotal = componentMap.stream().mapToInt(course -> course.enrollmentTotal).sum();
-                            System.out.println("\t\t\tType: "+ component + ", Enrollment = "+ enrollmentTotal+ "/"+ enrollmentCapacity);
-                        });
-                    });
-                });
-            });
-        });
+        for(Department department: departments) {
+            for(Course course: department.getCourses()) {
+                System.out.println(department.getSubject() + " " + course.getCatalogNumber());
+                for(CourseOffering courseOffering: course.getCourseOfferings()) {
+                    System.out.println("\t" +
+                            courseOffering.getSemester() +
+                            " in " + courseOffering.getLocation() +
+                            " " + courseOffering.getInstructors());
+                    for(Section section: courseOffering.getSections()) {
+                        System.out.println("\t\tTYPE = " +
+                                section.getComponent() +
+                                ", Enrollment = " +
+                                section.getEnrollmentTotal() +
+                                "/" +
+                                section.getEnrollmentCap());
+                    }
+                }
+            }
+        }
         return "Model dumped successfully.";
     }
-    public Set<Object> getAllSubjects(){
-        return offeringMap.keySet();
-    }
-
-    public Set<Object> getAllCourses(String subject){
-        Set<Object> departments = getAllSubjects();
-        for(Object dept:departments){
-            if(dept.equals(subject)){
-                return offeringMap.get(dept).keySet();
-            }
-        }
-        return null;
-    }
-    public  Map<Object, Map<Object, Map<Object, List<Offering>>>> getAllCourseOffering(String subject,String catalog){
-        Set<Object> courses = getAllCourses(subject);
-        for(Object course:courses){
-            if(course.equals(catalog)){
-                return offeringMap.get(subject).get(catalog);
-            }
-        }
-        return null;
-    }
-    public List<Offering> getOffering(String subject, String course){
-        if(offeringList.isEmpty()){
-            return null;
-        }
-        List<Offering> ans = new ArrayList<>();
-        System.out.println(offeringMap.get(subject).get(course));
-
-        //Give a list for this map
-        for(Offering offering:offeringList){
-            if(offering.getSubject().equals(subject) && offering.getCatalogNumber().equals(course)){
-                ans.add(offering);
-            }
-        }
-        return ans;
-    }
-    public boolean inList(List<ApiCourseOfferingDTO> list, Offering offering,String ins,List<String> instructorList){
-        long semester = offering.getSemester();
-        String location = offering.getLocation();
-        for(ApiCourseOfferingDTO courseOfferingDTO:list){
-            if(courseOfferingDTO.getSemesterCode() == semester && courseOfferingDTO.getLocation().equals(location)){
-                if(courseOfferingDTO.getInstructors().equals(ins)){
-                    return true;
-                }
-                else{
-                    for(String instructor:instructorList){
-                        if(!courseOfferingDTO.getInstructors().contains(instructor)){
-                            courseOfferingDTO.setInstructors(courseOfferingDTO.getInstructors()+", "+instructor);
-                        }
-                    }
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public List<ApiDepartmentDTO> getDepartment(){
         List<ApiDepartmentDTO> departmentDTOList = new ArrayList<>();
         for(Department department:departments){
             departmentDTOList.add(new ApiDepartmentDTO(department.getDeptId(),department.getSubject()));
         }
-        departmentDTOList.sort(Comparator.comparing(ApiDepartmentDTO::getName));
         return departmentDTOList;
     }
 
@@ -284,7 +205,6 @@ public static void map() {
         for(Course course:courses){
             courseDTOList.add(new ApiCourseDTO(course.getCourseId(),course.getCatalogNumber()));
         }
-        courseDTOList.sort(Comparator.comparing(course->course.catalogNumber));
         return courseDTOList;
     }
 
@@ -308,7 +228,6 @@ public static void map() {
             courseOfferingDTOList.add(new ApiCourseOfferingDTO(courseOffering.getOfferingId(),courseOffering.getLocation()
             , courseOffering.getInstructors().toString(),term,courseOffering.getSemester(),year));
         }
-        courseOfferingDTOList.sort(Comparator.comparing(ApiCourseOfferingDTO::getSemesterCode));
         return courseOfferingDTOList;
     }
 
@@ -333,7 +252,6 @@ public static void map() {
             return "Fall";
         }
     }
-
     public List<ApiOfferingSectionDTO> getSections(long deptId,long courseId,long offeringId) {
         for (Department department : departments) {
             if (department.getDeptId() == deptId) {
@@ -350,16 +268,11 @@ public static void map() {
         }
         return null;
     }
-
     public List<ApiOfferingSectionDTO> convertToOfferingSectionApi(List<Section> sections){
         List<ApiOfferingSectionDTO> sectionDTOList = new ArrayList<>();
         for(Section section:sections){
             sectionDTOList.add(new ApiOfferingSectionDTO(section.getComponent(),section.getEnrollmentCap(),section.getEnrollmentTotal()));
         }
-        sectionDTOList.sort(Comparator.comparing(section->section.type));
         return sectionDTOList;
     }
-
-
-
 }

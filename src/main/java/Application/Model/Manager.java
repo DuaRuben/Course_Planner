@@ -1,9 +1,6 @@
 package Application.Model;
 
-import AllApiDtoClasses.ApiCourseDTO;
-import AllApiDtoClasses.ApiCourseOfferingDTO;
-import AllApiDtoClasses.ApiDepartmentDTO;
-import AllApiDtoClasses.ApiOfferingSectionDTO;
+import AllApiDtoClasses.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,7 +10,7 @@ import java.util.stream.Collectors;
 public class Manager {
     private static List<Offering> offeringList = new ArrayList<>();
     private static final CSV csv = new CSV();
-    private static List<Department> departments = new ArrayList<>();
+    public static List<Department> departments = new ArrayList<>();
     private static long deptId;
     private static long courseId;
     private static long courseOfferingId;
@@ -274,5 +271,43 @@ public class Manager {
             sectionDTOList.add(new ApiOfferingSectionDTO(section.getComponent(),section.getEnrollmentCap(),section.getEnrollmentTotal()));
         }
         return sectionDTOList;
+    }
+
+    public List<ApiGraphDataPointDTO> getGraph(long deptId) {
+        List<ApiGraphDataPointDTO> graphList = new ArrayList<>();
+        Set<Long> semesters = new HashSet<>();
+        for(Department department : departments) {
+            if(department.getDeptId() == deptId) {
+                for(Course course: department.getCourses()) {
+                    for (CourseOffering courseOffering: course.getCourseOfferings()) {
+                        semesters.add(courseOffering.getSemester());
+                    }
+
+                }
+
+            }
+        }
+        List<Long> semesterList = new ArrayList<>(semesters);
+        Collections.sort(semesterList);
+        for(Department department : departments) {
+            if(department.getDeptId() == deptId) {
+                for(Long semester: semesterList) {
+                    long total = 0;
+                    for(Course course: department.getCourses()) {
+                        for (CourseOffering courseOffering: course.getCourseOfferings()) {
+                            if(courseOffering.getSemester() == semester) {
+                                for(Section section: courseOffering.getSections()) {
+                                    if(section.getComponent().equals("LEC")) {
+                                        total += section.getEnrollmentTotal();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    graphList.add(new ApiGraphDataPointDTO(semester, total));
+                }
+            }
+        }
+        return graphList;
     }
 }

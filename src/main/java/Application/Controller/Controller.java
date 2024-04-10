@@ -1,8 +1,7 @@
 package Application.Controller;
 
 import AllApiDtoClasses.*;
-import Application.Model.Manager;
-import Application.Model.Offering;
+import Application.Model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,16 +9,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+
 @RestController
 public class Controller {
     Manager manager = new Manager();
-    List<ApiDepartmentDTO> departmentList;
-
-    List<ApiCourseDTO> courseList;
-
-    List<ApiCourseOfferingDTO> courseOfferingList;
     List<ApiWatcherDTO> watcherList = new ArrayList<>();
-
     private AtomicLong nextId = new AtomicLong();
 
     @GetMapping("/api/about")
@@ -64,8 +58,8 @@ public class Controller {
 
     @GetMapping("/api/stats/students-per-semester")
     @ResponseStatus(HttpStatus.OK)
-    public List<ApiGraphDataPointDTO> drawGraph(@RequestParam(value = "deptID",required = true) long deptID){
-        return null;
+    public List<ApiGraphDataPointDTO> drawGraph(@RequestParam(value = "deptId", required = true) long id){
+        return manager.getGraph(id);
     }
     @PostMapping("/api/addoffering")
     @ResponseStatus(HttpStatus.CREATED)
@@ -165,4 +159,5 @@ public class Controller {
         }
         return null;
     }
+
 }

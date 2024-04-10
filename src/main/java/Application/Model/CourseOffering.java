@@ -1,6 +1,8 @@
 package Application.Model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CourseOffering {
     long offeringId;
@@ -8,6 +10,13 @@ public class CourseOffering {
     String location;
     List<String> instructors;
     List<Section> sections;
+
+    public void setInstructors(Set<String> instructors) {
+        this.instructors.clear();
+        for(String instructor:instructors){
+            this.instructors.add(instructor);
+        }
+    }
 
     public CourseOffering(long offeringId, long semester, String location, List<String> instructors, List<Section> sections) {
         this.offeringId = offeringId;

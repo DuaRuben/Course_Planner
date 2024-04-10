@@ -23,6 +23,14 @@ public class Section {
         return component;
     }
 
+    public void setEnrollmentTotal(int enrollmentTotal) {
+        this.enrollmentTotal = enrollmentTotal;
+    }
+
+    public void setEnrollmentCap(int enrollmentCap) {
+        this.enrollmentCap = enrollmentCap;
+    }
+
     @Override
     public String toString() {
         return "Section{" +

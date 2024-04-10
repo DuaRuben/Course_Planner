@@ -25,7 +25,7 @@ public class Controller {
     @GetMapping("/api/about")
     @ResponseStatus(HttpStatus.OK)
     public ApiAboutDTO about() {
-        return new ApiAboutDTO("Assignment 5 : Course PLanner", "By: Ruben Dua and Pratham Garg");
+        return new ApiAboutDTO("Assignment 5 : Course Planner", "By: Ruben Dua and Pratham Garg");
     }
 
     @GetMapping("/api/dump-model")

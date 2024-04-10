@@ -11,7 +11,10 @@ public class Manager {
     private static List<Offering> offeringList = new ArrayList<>();
     private static Map<Object, Map<Object, Map<Object, Map<Object, Map<Object, List<Offering>>>>>> offeringMap;
     private static final CSV csv = new CSV();
-
+    private static List<Department> departments = new ArrayList<>();
+    private static long deptId;
+    private static long courseId;
+    private static long courseOfferingId;
     public void addOffering(Offering newOffering){
         offeringList.add(newOffering);
     }
@@ -37,6 +40,56 @@ public class Manager {
                                                 Collectors.groupingBy(course -> course.componentCode)
                 )))));
     }
+public static void map() {
+    for (Offering offering : offeringList) {
+        List<Course> courseList = departmentPresent(offering.getSubject());
+        if (courseList == null) {
+            List<Course> courses = new ArrayList<>();
+            List<CourseOffering> courseOfferings = new ArrayList<>();
+            List<Section> sections = new ArrayList<>();
+            Section section = new Section(offering.getEnrollmentTotal(),
+                    offering.getEnrollmentCapacity(),
+                    offering.getComponentCode());
+            sections.add(section);
+            CourseOffering courseOffering = new CourseOffering(courseOfferingId++,
+                    offering.getSemester(),
+                    offering.getLocation(),
+                    offering.getInstructors(),
+                    sections);
+            courseOfferings.add(courseOffering);
+            Course course = new Course(courseId++, offering.getCatalogNumber(), courseOfferings);
+            courses.add(course);
+            departments.add(new Department(deptId++, offering.getSubject(), courses));
+        } else {
+            List<CourseOffering> courseOfferingList = coursePresent(offering.catalogNumber, courseList);
+            if(courseOfferingList == null) {
+
+            } else {
+
+            }
+        }
+    }
+    System.out.println(departments);
+}
+    private static List<Course> departmentPresent(String dept) {
+        for(Department department: departments) {
+            if(department.getSubject().equals(dept)) {
+                return department.getCourses();
+            }
+        }
+        return null;
+    }
+    public static List<CourseOffering> coursePresent(String catalogNumber, List<Course> courses) {
+        for(Course course: courses) {
+            if(course.getCatalogNumber().equals(catalogNumber)) {
+                return course.getCourseOfferings();
+            }
+        }
+        return null;
+    }
+
+
+
     public String printModel() {
         System.out.println();
         offeringMap.forEach((subject, subjectMap) -> {

@@ -1,20 +1,36 @@
 package Application.Model;
 
+import java.util.List;
+
 public class Department {
+    long deptId;
     String subject;
+    List<Course> courses;
 
-    Course course;
-
-    public Department(String subject, Course course) {
-        this.subject = subject;
-        this.course = course;
+    public long getDeptId() {
+        return deptId;
     }
 
     public String getSubject() {
         return subject;
     }
 
-    public Course getCourse() {
-        return course;
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public Department(long deptId, String subject, List<Course> course) {
+        this.deptId = deptId;
+        this.subject = subject;
+        this.courses = course;
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "deptId=" + deptId +
+                ", subject='" + subject + '\'' +
+                ", courses=" + courses +
+                '}';
     }
 }

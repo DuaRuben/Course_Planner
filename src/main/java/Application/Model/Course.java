@@ -3,19 +3,34 @@ package Application.Model;
 import java.util.List;
 
 public class Course {
+    long courseId;
     String catalogNumber;
-    List<CourseOffering> courseOffering;
+    List<CourseOffering> courseOfferings;
 
-    public Course(String catalogNumber, List<CourseOffering> courseOffering) {
+    public Course(long courseId, String catalogNumber, List<CourseOffering> courseOfferings) {
+        this.courseId = courseId;
         this.catalogNumber = catalogNumber;
-        this.courseOffering = courseOffering;
+        this.courseOfferings = courseOfferings;
+    }
+
+    public long getCourseId() {
+        return courseId;
     }
 
     public String getCatalogNumber() {
         return catalogNumber;
     }
 
-    public List<CourseOffering> getCourseOffering() {
-        return courseOffering;
+    public List<CourseOffering> getCourseOfferings() {
+        return courseOfferings;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "courseId=" + courseId +
+                ", catalogNumber='" + catalogNumber + '\'' +
+                ", courseOfferings=" + courseOfferings +
+                '}';
     }
 }

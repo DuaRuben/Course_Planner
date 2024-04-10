@@ -62,7 +62,6 @@ public class Offering {
         }
         this.componentCode = componentCode;
     }
-
     @Override
     public String toString() {
         return "\n\tOffering\n" +
@@ -77,7 +76,5 @@ public class Offering {
                 "\t\tcomponentCode = " + componentCode + '\n' +
                 "\t}\n";
     }
-
-
 
 }

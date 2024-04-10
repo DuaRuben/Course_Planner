@@ -22,4 +22,13 @@ public class Section {
     public String getComponent() {
         return component;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "enrollmentTotal=" + enrollmentTotal +
+                ", enrollmentCap=" + enrollmentCap +
+                ", component='" + component + '\'' +
+                '}';
+    }
 }

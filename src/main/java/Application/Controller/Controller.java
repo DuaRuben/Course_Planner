@@ -62,9 +62,9 @@ public class Controller {
         return manager.getSections(deptId,courseID,offeringId);
     }
 
-    @GetMapping("/api/stats/students-per-semester?deptID")
+    @GetMapping("/api/stats/students-per-semester")
     @ResponseStatus(HttpStatus.OK)
-    public List<ApiGraphDataPointDTO> drawGraph(@RequestParam("deptID") long deptID){
+    public List<ApiGraphDataPointDTO> drawGraph(@RequestParam(value = "deptID",required = true) long deptID){
         return null;
     }
     @PostMapping("/api/addoffering")

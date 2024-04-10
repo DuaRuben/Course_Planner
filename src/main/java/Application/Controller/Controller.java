@@ -62,6 +62,11 @@ public class Controller {
         return manager.getSections(deptId,courseID,offeringId);
     }
 
+    @GetMapping("/api/stats/students-per-semester?deptID")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ApiGraphDataPointDTO> drawGraph(@RequestParam("deptID") long deptID){
+        return null;
+    }
     @PostMapping("/api/addoffering")
     @ResponseStatus(HttpStatus.CREATED)
     public void addOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO){
@@ -75,27 +80,25 @@ public class Controller {
         String instructor = offeringDataDTO.getInstructor();
         String component = offeringDataDTO.getComponent();
 
+
         Offering newOffering = new Offering(semester,subjectName,catalogNumber,
                 location,enrollmentCap,enrollmentTotal,List.of(instructor),component);
+        Manager.addOffering(newOffering);
 
-        // Change this to map.put()
-        manager.addOffering(newOffering);
-        Manager.mapOfferings();
+        Date currentDate = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+        String formattedDate = format.format(currentDate);
+        int year = manager.getYear(semester);
+        String term = manager.getTerm(semester);
 
-//        Date currentDate = new Date();
-//        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-//        String formattedDate = format.format(currentDate);
-//        int year = getYear(semester);
-//        String term = getTerm(semester);
-//
-//        for(ApiWatcherDTO watcher:watcherList){
-//            if(watcher.getDepartment().getName().equals(subjectName)
-//                    && watcher.getCourse().getCatalogNumber().equals(catalogNumber)){
-//                String event = formattedDate+": Added section "+ component+ " with enrollment ("+ enrollmentTotal
-//                        +"/"+enrollmentCap+") to offering "+term+" "+year;
-//                watcher.getEvents().add(event);
-//            }
-//        }
+        for(ApiWatcherDTO watcher:watcherList){
+            if(watcher.getDepartment().getName().equals(subjectName)
+                    && watcher.getCourse().getCatalogNumber().equals(catalogNumber)){
+                String event = formattedDate+": Added section "+ component+ " with enrollment ("+ enrollmentTotal
+                        +"/"+enrollmentCap+") to offering "+term+" "+year;
+                watcher.getEvents().add(event);
+            }
+        }
     }
 
     @GetMapping("/api/watchers")
@@ -108,7 +111,7 @@ public class Controller {
     @ResponseStatus(HttpStatus.CREATED)
     public void addWatcher(@RequestBody ApiWatcherCreateDTO newWatcher){
         ApiDepartmentDTO department = getDepartment(newWatcher.getDeptId());
-        ApiCourseDTO course = getCourse(newWatcher.getCourseId());
+        ApiCourseDTO course = getCourse(newWatcher.getCourseId(), newWatcher.getDeptId());
         if(department == null || course == null){
             throw new IllegalArgumentException();
         }
@@ -146,7 +149,7 @@ public class Controller {
     }
 
     public ApiDepartmentDTO getDepartment(long deptId) {
-        for (ApiDepartmentDTO departmentDTO : departmentList) {
+        for (ApiDepartmentDTO departmentDTO : manager.getDepartment()) {
             if (departmentDTO.getDeptId() == deptId) {
                 return departmentDTO;
             }
@@ -154,22 +157,12 @@ public class Controller {
         return null;
     }
 
-    public ApiCourseDTO getCourse(long courseID) {
-        for (ApiCourseDTO courseDTO : courseList) {
+    public ApiCourseDTO getCourse(long courseID,long deptID) {
+        for (ApiCourseDTO courseDTO : manager.getCourses(deptID)) {
             if (courseDTO.getCourseId() == courseID) {
                 return courseDTO;
             }
         }
         return null;
     }
-    public ApiCourseOfferingDTO getOffering(long offeringId) {
-        for (ApiCourseOfferingDTO offeringDTO : courseOfferingList) {
-            if (offeringDTO.getCourseOfferingId() == offeringId) {
-                return offeringDTO;
-            }
-        }
-        return null;
-    }
-
-
 }

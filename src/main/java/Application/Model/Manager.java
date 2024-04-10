@@ -18,9 +18,6 @@ public class Manager {
     private static long deptId;
     private static long courseId;
     private static long courseOfferingId;
-    public void addOffering(Offering newOffering){
-        offeringList.add(newOffering);
-    }
 
     public static void run(Path csvPath) throws IOException {
         offeringList = csv.loadListFromCsv(csvPath);
@@ -45,7 +42,7 @@ public class Manager {
                 )))));
     }
 
-    static Department departmentPresent(String dept) {
+    public static Department departmentPresent(String dept) {
         for(Department department: departments) {
             if(department.getSubject().equals(dept)) {
                 return department;
@@ -53,8 +50,7 @@ public class Manager {
         }
         return null;
     }
-public static void map() {
-    for (Offering offering : offeringList) {
+    public static void addOffering(Offering offering){
         Department department= departmentPresent(offering.getSubject());
         if (department == null) {
             List<Course> courses = new ArrayList<>();
@@ -76,6 +72,10 @@ public static void map() {
         } else {
             checkCourses(department,offering);
         }
+    }
+public static void map() {
+    for (Offering offering : offeringList) {
+        addOffering(offering);
     }
 }
 

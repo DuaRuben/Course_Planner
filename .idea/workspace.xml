@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17c7595c-011d-4b91-976c-46a38596a89f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/Application/Model/Map.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Application/Model/CSV.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Model/CSV.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Application/Model/Manager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Model/Manager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,17 +66,24 @@
     "Gradle.Course_Planner [:Application.main()].executor": "Run",
     "Gradle.Course_Planner [:Main.main()].executor": "Run",
     "Gradle.Course_Planner [:application.main()].executor": "Run",
+    "Gradle.Untitled [:Application.main()].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "dev",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/DELL/Documents/GitHub/Course_Planner",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "onboarding.tips.debug.path": "/Users/DELL/Documents/GitHub/Course_Planner/src/main/java/org/example/Main.java",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "configurable.group.build"
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -81,10 +91,17 @@
       <recent name="$PROJECT_DIR$/src/main/java" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Unnamed">
     <configuration name="Unnamed" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Application.Application" />
       <module name="assignment5.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="assignment5.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="Application.Application" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -93,8 +110,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="jdk-17.0.10-corretto-17.0.10-3183f394aec4-96c0d24d" />
-        <option value="jdk-21.0.2-openjdk-21.0.2-4caba194b151-322ed176" />
+        <option value="jdk-17.0.10-corretto-17.0.10-f644763e9732-24582b8d" />
       </set>
     </attachedChunks>
   </component>
@@ -106,8 +122,24 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1712123098178</updated>
+      <workItem from="1712709179552" duration="19006000" />
+      <workItem from="1713050338552" duration="1236000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

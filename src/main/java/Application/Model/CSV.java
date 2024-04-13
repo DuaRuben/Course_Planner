@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static Application.Model.Manager.departmentPresent;
-
 public class CSV {
     public List<Offering> loadListFromCsv(Path csvPath) throws IOException {
         List<Offering> offeringList = new ArrayList<>();

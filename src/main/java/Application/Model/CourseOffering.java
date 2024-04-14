@@ -2,6 +2,7 @@ package Application.Model;
 
 import java.util.*;
 
+// CourseOffering class to store course offering details
 public class CourseOffering {
     long offeringId;
     long semester;

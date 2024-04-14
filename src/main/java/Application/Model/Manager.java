@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// Manager class to manage the course offering details
 public class Manager {
     private static final Map map = new Map();
     public static List<Department> departments = new ArrayList<>();

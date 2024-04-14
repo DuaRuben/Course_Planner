@@ -2,6 +2,7 @@ package Application.Model;
 
 import java.util.List;
 
+// Department class to store department details
 public class Department {
     long deptId;
     String subject;

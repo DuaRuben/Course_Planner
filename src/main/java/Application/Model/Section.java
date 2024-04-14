@@ -1,5 +1,6 @@
 package Application.Model;
 
+// Section class to store section details
 public class Section {
     int enrollmentTotal;
     int enrollmentCap;

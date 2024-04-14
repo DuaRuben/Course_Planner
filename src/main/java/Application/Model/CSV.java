@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// CSV class to load course offering details from CSV file
 public class CSV {
     public List<Offering> loadListFromCsv(Path csvPath) throws IOException {
         List<Offering> offeringList = new ArrayList<>();

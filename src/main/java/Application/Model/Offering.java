@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// Offering class to store course offering details
 public class Offering {
     public long semester;
     public String subject;

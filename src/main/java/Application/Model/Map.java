@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
+// Map class to map the course offering details
 public class Map {
     private static final CSV csv = new CSV();
     private static List<Offering> offeringList = new ArrayList<>();

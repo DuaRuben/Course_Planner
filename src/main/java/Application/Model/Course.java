@@ -2,6 +2,7 @@ package Application.Model;
 
 import java.util.List;
 
+// Course class to store course details
 public class Course {
     long courseId;
     String catalogNumber;

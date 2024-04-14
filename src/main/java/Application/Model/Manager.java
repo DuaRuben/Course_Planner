@@ -20,28 +20,6 @@ public class Manager {
         Map.addOffering(offering);
         departments = Map.departments;
     }
-    public String printModel() {
-        for(Department department: departments) {
-            for(Course course: department.getCourses()) {
-                System.out.println(department.getSubject() + " " + course.getCatalogNumber());
-                for(CourseOffering courseOffering: course.getCourseOfferings()) {
-                    System.out.println("\t" +
-                            courseOffering.getSemester() +
-                            " in " + courseOffering.getLocation() +
-                            " " + courseOffering.getInstructors());
-                    for(Section section: courseOffering.getSections()) {
-                        System.out.println("\t\tTYPE = " +
-                                section.getComponent() +
-                                ", Enrollment = " +
-                                section.getEnrollmentTotal() +
-                                "/" +
-                                section.getEnrollmentCap());
-                    }
-                }
-            }
-        }
-        return "Model dumped successfully.";
-    }
     public List<ApiDepartmentDTO> getDepartment(){
         List<ApiDepartmentDTO> departmentDTOList = new ArrayList<>();
         for(Department department:departments){
@@ -168,6 +146,9 @@ public class Manager {
                     graphList.add(new ApiGraphDataPointDTO(semester, total));
                 }
             }
+        }
+        if(graphList.isEmpty()){
+            return null;
         }
         return graphList;
     }

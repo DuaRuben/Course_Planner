@@ -25,7 +25,7 @@ public class Controller {
     @GetMapping("/api/dump-model")
     @ResponseStatus(HttpStatus.OK)
     public String dumpModel() {
-        return manager.printModel();
+        return printModel();
     }
 
     @GetMapping("/api/departments")
@@ -37,14 +37,22 @@ public class Controller {
     @GetMapping("/api/departments/{deptId}/courses")
     @ResponseStatus(HttpStatus.OK)
     public List<ApiCourseDTO> getAllCourses(@PathVariable("deptId") long deptId) {
-        return manager.getCourses(deptId);
+        List<ApiCourseDTO> courses = manager.getCourses(deptId);
+        if(courses == null){
+            throw new IllegalArgumentException();
+        }
+        return courses;
     }
 
     @GetMapping("/api/departments/{deptId}/courses/{courseID}/offerings")
     @ResponseStatus(HttpStatus.OK)
     public List<ApiCourseOfferingDTO> getCourseOfferings(@PathVariable("deptId") long deptId,
                                                          @PathVariable("courseID") long courseID) {
-        return manager.getCourseOffering(deptId,courseID);
+        List<ApiCourseOfferingDTO> courseOfferingDTOList = manager.getCourseOffering(deptId,courseID);
+        if(courseOfferingDTOList == null){
+            throw new IllegalArgumentException();
+        }
+        return courseOfferingDTOList;
 
     }
     @GetMapping("/api/departments/{deptId}/courses/{courseId}/offerings/{offeringId}")
@@ -53,17 +61,25 @@ public class Controller {
                                                    @PathVariable("courseId") long courseID,
                                                    @PathVariable("offeringId") long offeringId){
 
-        return manager.getSections(deptId,courseID,offeringId);
+        List<ApiOfferingSectionDTO> sectionDTOList = manager.getSections(deptId, courseID, offeringId);
+        if (sectionDTOList == null) {
+            throw new IllegalArgumentException();
+        }
+        return sectionDTOList;
     }
 
     @GetMapping("/api/stats/students-per-semester")
     @ResponseStatus(HttpStatus.OK)
     public List<ApiGraphDataPointDTO> drawGraph(@RequestParam(value = "deptId", required = true) long id){
-        return manager.getGraph(id);
+        List<ApiGraphDataPointDTO> graphDataPointDTOS =  manager.getGraph(id);
+        if(graphDataPointDTOS == null){
+            throw new IllegalArgumentException();
+        }
+        return graphDataPointDTOS;
     }
     @PostMapping("/api/addoffering")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO){
+    public ApiOfferingSectionDTO addOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO){
 
         long semester = Long.parseLong(offeringDataDTO.getSemester());
         String subjectName = offeringDataDTO.getSubjectName();
@@ -93,6 +109,8 @@ public class Controller {
                 watcher.getEvents().add(event);
             }
         }
+        ApiOfferingSectionDTO section = new ApiOfferingSectionDTO(component,enrollmentCap,enrollmentTotal);
+        return section;
     }
 
     @GetMapping("/api/watchers")
@@ -103,38 +121,41 @@ public class Controller {
 
     @PostMapping("/api/watchers")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addWatcher(@RequestBody ApiWatcherCreateDTO newWatcher){
-        ApiDepartmentDTO department = getDepartment(newWatcher.getDeptId());
-        ApiCourseDTO course = getCourse(newWatcher.getCourseId(), newWatcher.getDeptId());
+    public ApiWatcherDTO addWatcher(@RequestBody ApiWatcherCreateDTO newWatcherCreate){
+        ApiDepartmentDTO department = getDepartment(newWatcherCreate.getDeptId());
+        ApiCourseDTO course = getCourse(newWatcherCreate.getCourseId(), newWatcherCreate.getDeptId());
         if(department == null || course == null){
             throw new IllegalArgumentException();
         }
         List<String> events = new ArrayList<>();
-        watcherList.add(new ApiWatcherDTO(nextId.incrementAndGet(),department,course,events));
+        ApiWatcherDTO newWatcher = new ApiWatcherDTO(nextId.incrementAndGet(),department,course,events);
+        watcherList.add(newWatcher);
+        return newWatcher;
     }
 
     @GetMapping("/api/watchers/{watcherID}")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> getWatcher(@PathVariable("watcherID") long watcherID){
+    public ApiWatcherDTO getWatcher(@PathVariable("watcherID") long watcherID){
         for(ApiWatcherDTO watcher:watcherList){
             if(watcher.getId() == watcherID){
-                return watcher.getEvents();
+                return watcher;
             }
         }
-        return null;
+        throw new IllegalArgumentException();
     }
     @DeleteMapping("/api/watchers/{watcherID}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteWatcher(@PathVariable("watcherID") long watcherID){
-        int index = 0;
-        for(ApiWatcherDTO watcher:watcherList){
-            if(watcher.getId() == watcherID){
-                watcherList.remove(index);
+    public void deleteWatcher(@PathVariable("watcherID") long watcherID) {
+        Iterator<ApiWatcherDTO> iterator = watcherList.iterator();
+        while (iterator.hasNext()) {
+            ApiWatcherDTO watcher = iterator.next();
+            if (watcher.getId() == watcherID) {
+                iterator.remove();
+                return;
             }
-            index++;
         }
+        throw new IllegalArgumentException();
     }
-
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Request ID not found.")
     @ExceptionHandler(IllegalArgumentException.class)
@@ -152,12 +173,39 @@ public class Controller {
     }
 
     public ApiCourseDTO getCourse(long courseID,long deptID) {
-        for (ApiCourseDTO courseDTO : manager.getCourses(deptID)) {
+        List<ApiCourseDTO> courseDTOList = manager.getCourses(deptID);
+        if(courseDTOList == null){
+            return null;
+        }
+        for (ApiCourseDTO courseDTO :courseDTOList ) {
             if (courseDTO.getCourseId() == courseID) {
                 return courseDTO;
             }
         }
         return null;
+    }
+
+    public String printModel() {
+        for(Department department: Manager.departments) {
+            for(Course course: department.getCourses()) {
+                System.out.println(department.getSubject() + " " + course.getCatalogNumber());
+                for(CourseOffering courseOffering: course.getCourseOfferings()) {
+                    System.out.println("\t" +
+                            courseOffering.getSemester() +
+                            " in " + courseOffering.getLocation() +
+                            " " + courseOffering.getInstructors());
+                    for(Section section: courseOffering.getSections()) {
+                        System.out.println("\t\tTYPE = " +
+                                section.getComponent() +
+                                ", Enrollment = " +
+                                section.getEnrollmentTotal() +
+                                "/" +
+                                section.getEnrollmentCap());
+                    }
+                }
+            }
+        }
+        return "Model dumped successfully.";
     }
 
 }

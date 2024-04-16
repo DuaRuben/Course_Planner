@@ -1,0 +1,108 @@
+Index: src/main/java/Application/Controller/Controller.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Application.Controller;\n\nimport AllApiDtoClasses.*;\nimport Application.Model.*;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.web.bind.annotation.*;\n\nimport java.text.SimpleDateFormat;\nimport java.util.*;\nimport java.util.concurrent.atomic.AtomicLong;\n\n\n@RestController\npublic class Controller {\n    Manager manager = new Manager();\n    List<ApiWatcherDTO> watcherList = new ArrayList<>();\n    private AtomicLong nextId = new AtomicLong();\n\n    @GetMapping(\"/api/about\")\n    @ResponseStatus(HttpStatus.OK)\n    public ApiAboutDTO about() {\n        return new ApiAboutDTO(\"Assignment 5 : Course Planner\", \"By: Ruben Dua and Pratham Garg\");\n    }\n\n    @GetMapping(\"/api/dump-model\")\n    @ResponseStatus(HttpStatus.OK)\n    public String dumpModel() {\n        return manager.printModel();\n    }\n\n    @GetMapping(\"/api/departments\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<ApiDepartmentDTO> getAllDepartments() {\n        return manager.getDepartment();\n    }\n\n    @GetMapping(\"/api/departments/{deptId}/courses\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<ApiCourseDTO> getAllCourses(@PathVariable(\"deptId\") long deptId) {\n        return manager.getCourses(deptId);\n    }\n\n    @GetMapping(\"/api/departments/{deptId}/courses/{courseID}/offerings\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<ApiCourseOfferingDTO> getCourseOfferings(@PathVariable(\"deptId\") long deptId,\n                                                         @PathVariable(\"courseID\") long courseID) {\n        return manager.getCourseOffering(deptId,courseID);\n\n    }\n    @GetMapping(\"/api/departments/{deptId}/courses/{courseId}/offerings/{offeringId}\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<ApiOfferingSectionDTO> getSections(@PathVariable(\"deptId\") long deptId,\n                                                   @PathVariable(\"courseId\") long courseID,\n                                                   @PathVariable(\"offeringId\") long offeringId){\n\n        return manager.getSections(deptId,courseID,offeringId);\n    }\n\n    @GetMapping(\"/api/stats/students-per-semester\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<ApiGraphDataPointDTO> drawGraph(@RequestParam(value = \"deptId\", required = true) long id){\n        return manager.getGraph(id);\n    }\n    @PostMapping(\"/api/addoffering\")\n    @ResponseStatus(HttpStatus.CREATED)\n    public void addOffering(@RequestBody ApiOfferingDataDTO offeringDataDTO){\n\n        long semester = Long.parseLong(offeringDataDTO.getSemester());\n        String subjectName = offeringDataDTO.getSubjectName();\n        String catalogNumber = offeringDataDTO.getCatalogNumber();;\n        String location = offeringDataDTO.getLocation();\n        int enrollmentCap = offeringDataDTO.getEnrollmentCap();\n        int enrollmentTotal = offeringDataDTO.getEnrollmentTotal();\n        String instructor = offeringDataDTO.getInstructor();\n        String component = offeringDataDTO.getComponent();\n\n\n        Offering newOffering = new Offering(semester,subjectName,catalogNumber,\n                location,enrollmentCap,enrollmentTotal,List.of(instructor),component);\n        Manager.addOffering(newOffering);\n\n        Date currentDate = new Date();\n        SimpleDateFormat format = new SimpleDateFormat(\"EEE MMM dd HH:mm:ss zzz yyyy\");\n        String formattedDate = format.format(currentDate);\n        int year = manager.getYear(semester);\n        String term = manager.getTerm(semester);\n\n        for(ApiWatcherDTO watcher:watcherList){\n            if(watcher.getDepartment().getName().equals(subjectName)\n                    && watcher.getCourse().getCatalogNumber().equals(catalogNumber)){\n                String event = formattedDate+\": Added section \"+ component+ \" with enrollment (\"+ enrollmentTotal\n                        +\"/\"+enrollmentCap+\") to offering \"+term+\" \"+year;\n                watcher.getEvents().add(event);\n            }\n        }\n    }\n\n    @GetMapping(\"/api/watchers\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<ApiWatcherDTO> getAllWatchers(){\n        return watcherList;\n    }\n\n    @PostMapping(\"/api/watchers\")\n    @ResponseStatus(HttpStatus.CREATED)\n    public void addWatcher(@RequestBody ApiWatcherCreateDTO newWatcher){\n        ApiDepartmentDTO department = getDepartment(newWatcher.getDeptId());\n        ApiCourseDTO course = getCourse(newWatcher.getCourseId(), newWatcher.getDeptId());\n        if(department == null || course == null){\n            throw new IllegalArgumentException();\n        }\n        List<String> events = new ArrayList<>();\n        watcherList.add(new ApiWatcherDTO(nextId.incrementAndGet(),department,course,events));\n    }\n\n    @GetMapping(\"/api/watchers/{watcherID}\")\n    @ResponseStatus(HttpStatus.OK)\n    public List<String> getWatcher(@PathVariable(\"watcherID\") long watcherID){\n        for(ApiWatcherDTO watcher:watcherList){\n            if(watcher.getId() == watcherID){\n                return watcher.getEvents();\n            }\n        }\n        return null;\n    }\n    @DeleteMapping(\"/api/watchers/{watcherID}\")\n    @ResponseStatus(HttpStatus.NO_CONTENT)\n    public void deleteWatcher(@PathVariable(\"watcherID\") long watcherID){\n        int index = 0;\n        for(ApiWatcherDTO watcher:watcherList){\n            if(watcher.getId() == watcherID){\n                watcherList.remove(index);\n            }\n            index++;\n        }\n    }\n\n\n    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = \"Request ID not found.\")\n    @ExceptionHandler(IllegalArgumentException.class)\n    public void badIdExceptionHandler() {\n        // Nothing to do\n    }\n\n    public ApiDepartmentDTO getDepartment(long deptId) {\n        for (ApiDepartmentDTO departmentDTO : manager.getDepartment()) {\n            if (departmentDTO.getDeptId() == deptId) {\n                return departmentDTO;\n            }\n        }\n        return null;\n    }\n\n    public ApiCourseDTO getCourse(long courseID,long deptID) {\n        for (ApiCourseDTO courseDTO : manager.getCourses(deptID)) {\n            if (courseDTO.getCourseId() == courseID) {\n                return courseDTO;\n            }\n        }\n        return null;\n    }\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/Application/Controller/Controller.java b/src/main/java/Application/Controller/Controller.java
+--- a/src/main/java/Application/Controller/Controller.java	(revision b1d48c0a757447ad66e800e4c4b7e2b5dc7bc3bc)
++++ b/src/main/java/Application/Controller/Controller.java	(date 1713065018621)
+@@ -9,7 +9,6 @@
+ import java.util.*;
+ import java.util.concurrent.atomic.AtomicLong;
+ 
+-
+ @RestController
+ public class Controller {
+     Manager manager = new Manager();
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"17c7595c-011d-4b91-976c-46a38596a89f\" name=\"Changes\" comment=\"\">\n      <change afterPath=\"$PROJECT_DIR$/src/main/java/Application/Model/Map.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/Application/Model/CSV.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/Application/Model/CSV.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/main/java/Application/Model/Manager.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/main/java/Application/Model/Manager.java\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"ExternalProjectsData\">\n    <projectState path=\"$PROJECT_DIR$\">\n      <ProjectState />\n    </projectState>\n  </component>\n  <component name=\"ExternalProjectsManager\">\n    <system id=\"GRADLE\">\n      <state>\n        <projects_view>\n          <tree_state>\n            <expand>\n              <path>\n                <item name=\"\" type=\"6a2764b6:ExternalProjectsStructure$RootNode\" />\n                <item name=\"assignment5\" type=\"f1a62948:ProjectNode\" />\n              </path>\n            </expand>\n            <select />\n          </tree_state>\n        </projects_view>\n      </state>\n    </system>\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"2eZrm85nJnjVVyp7MzC9nIxRkr5\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"Application.Unnamed.executor\": \"Run\",\n    \"Gradle.Build Course_Planner.executor\": \"Run\",\n    \"Gradle.Course_Planner [:Application.main()].executor\": \"Run\",\n    \"Gradle.Course_Planner [:Main.main()].executor\": \"Run\",\n    \"Gradle.Course_Planner [:application.main()].executor\": \"Run\",\n    \"Gradle.Untitled [:Application.main()].executor\": \"Run\",\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"git-widget-placeholder\": \"dev\",\n    \"kotlin-language-version-configured\": \"true\",\n    \"last_opened_file_path\": \"/Users/DELL/Documents/GitHub/Course_Planner\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.detected.package.tslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"onboarding.tips.debug.path\": \"/Users/DELL/Documents/GitHub/Course_Planner/src/main/java/org/example/Main.java\",\n    \"project.structure.last.edited\": \"Project\",\n    \"project.structure.proportion\": \"0.0\",\n    \"project.structure.side.proportion\": \"0.0\",\n    \"settings.editor.selected.configurable\": \"preferences.pluginManager\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/src/main/java\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Application.Unnamed\">\n    <configuration name=\"Unnamed\" type=\"Application\" factoryName=\"Application\" nameIsGenerated=\"true\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"Application.Application\" />\n      <module name=\"assignment5.main\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Application\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\n      <module name=\"assignment5.main\" />\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"Application.Application\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"jdk-17.0.10-corretto-17.0.10-f644763e9732-24582b8d\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"17c7595c-011d-4b91-976c-46a38596a89f\" name=\"Changes\" comment=\"\" />\n      <created>1712123098178</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1712123098178</updated>\n      <workItem from=\"1712709179552\" duration=\"19006000\" />\n      <workItem from=\"1713050338552\" duration=\"1236000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"XDebuggerManager\">\n    <breakpoint-manager>\n      <breakpoints>\n        <line-breakpoint enabled=\"true\" type=\"java-line\">\n          <url>file://$PROJECT_DIR$/src/main/java/org/example/Main.java</url>\n          <line>13</line>\n          <option name=\"timeStamp\" value=\"1\" />\n        </line-breakpoint>\n      </breakpoints>\n    </breakpoint-manager>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision b1d48c0a757447ad66e800e4c4b7e2b5dc7bc3bc)
++++ b/.idea/workspace.xml	(date 1713065062724)
+@@ -5,10 +5,7 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="17c7595c-011d-4b91-976c-46a38596a89f" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/src/main/java/Application/Model/Map.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/Application/Model/CSV.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Model/CSV.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/main/java/Application/Model/Manager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Model/Manager.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/Application/Controller/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Application/Controller/Controller.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -59,33 +56,33 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "Application.Unnamed.executor": "Run",
+-    "Gradle.Build Course_Planner.executor": "Run",
+-    "Gradle.Course_Planner [:Application.main()].executor": "Run",
+-    "Gradle.Course_Planner [:Main.main()].executor": "Run",
+-    "Gradle.Course_Planner [:application.main()].executor": "Run",
+-    "Gradle.Untitled [:Application.main()].executor": "Run",
+-    "RunOnceActivity.OpenProjectViewOnStart": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+-    "git-widget-placeholder": "dev",
+-    "kotlin-language-version-configured": "true",
+-    "last_opened_file_path": "/Users/DELL/Documents/GitHub/Course_Planner",
+-    "node.js.detected.package.eslint": "true",
+-    "node.js.detected.package.tslint": "true",
+-    "node.js.selected.package.eslint": "(autodetect)",
+-    "node.js.selected.package.tslint": "(autodetect)",
+-    "nodejs_package_manager_path": "npm",
+-    "onboarding.tips.debug.path": "/Users/DELL/Documents/GitHub/Course_Planner/src/main/java/org/example/Main.java",
+-    "project.structure.last.edited": "Project",
+-    "project.structure.proportion": "0.0",
+-    "project.structure.side.proportion": "0.0",
+-    "settings.editor.selected.configurable": "preferences.pluginManager",
+-    "vue.rearranger.settings.migration": "true"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;Application.Unnamed.executor&quot;: &quot;Run&quot;,
++    &quot;Gradle.Build Course_Planner.executor&quot;: &quot;Run&quot;,
++    &quot;Gradle.Course_Planner [:Application.main()].executor&quot;: &quot;Run&quot;,
++    &quot;Gradle.Course_Planner [:Main.main()].executor&quot;: &quot;Run&quot;,
++    &quot;Gradle.Course_Planner [:application.main()].executor&quot;: &quot;Run&quot;,
++    &quot;Gradle.Untitled [:Application.main()].executor&quot;: &quot;Run&quot;,
++    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;/Users/DELL/Documents/GitHub/Course_Planner&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/DELL/Documents/GitHub/Course_Planner/src/main/java/org/example/Main.java&quot;,
++    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
++    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
++    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+       <recent name="$PROJECT_DIR$/src/main/java" />
+@@ -124,6 +121,7 @@
+       <updated>1712123098178</updated>
+       <workItem from="1712709179552" duration="19006000" />
+       <workItem from="1713050338552" duration="1236000" />
++      <workItem from="1713051593422" duration="2324000" />
+     </task>
+     <servers />
+   </component>

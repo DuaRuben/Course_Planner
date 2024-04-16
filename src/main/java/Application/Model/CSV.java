@@ -8,15 +8,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// CSV class to load course offering details from CSV file
 public class CSV {
     public List<Offering> loadListFromCsv(Path csvPath) throws IOException {
         List<Offering> offeringList = new ArrayList<>();
-        if(Files.exists(csvPath)) {
+        if (Files.exists(csvPath)) {
             offeringList = Files.lines(csvPath)
                     .skip(1)
                     .map(course -> {
                         String[] line = course.split("\"");
-                        if(line.length == 1) {
+                        if (line.length == 1) {
                             String[] values = course.split(",");
                             return new Offering(Integer.parseInt(values[0]),
                                     values[1].trim(),

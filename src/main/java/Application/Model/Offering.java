@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// Offering class to store course offering details
 public class Offering {
     public long semester;
     public String subject;
@@ -62,7 +63,6 @@ public class Offering {
         }
         this.componentCode = componentCode;
     }
-
     @Override
     public String toString() {
         return "\n\tOffering\n" +
@@ -77,7 +77,5 @@ public class Offering {
                 "\t\tcomponentCode = " + componentCode + '\n' +
                 "\t}\n";
     }
-
-
 
 }

@@ -7,6 +7,9 @@ public class ApiWatcherDTO {
     public ApiCourseDTO course;
     public List<String> events;
 
+    public ApiWatcherDTO() {
+    }
+
     public ApiWatcherDTO(long id, ApiDepartmentDTO department, ApiCourseDTO course, List<String> events) {
         this.id = id;
         this.department = department;
